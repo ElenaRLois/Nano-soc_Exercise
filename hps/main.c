@@ -55,6 +55,7 @@ int main()
 	int switch_mask = 0x3;
 	double t_period;
 	clock_t last_rec_time;
+	clock_t time_now;
 	int led_status = 0;
 	double t_dif;
 
@@ -97,8 +98,13 @@ int main()
 			break;
 		}
 
+<<<<<<< HEAD
 		t_dif = ((double)clock()-last_rec_time);//CLOCKS_PER_SEC; // time in seconds
 		printf("%f\n",t_dif);
+=======
+		time_now = clock();
+		t_dif = (double)((time_now-last_rec_time)/CLOCKS_PER_SEC); // time in seconds
+>>>>>>> ddee9549a44e9e74468357c7e6b759511354b6b4
 
 		if ((t_dif>t_period) && (t_period > 0))
 		{							  //if time is up and it's supposed to blink
