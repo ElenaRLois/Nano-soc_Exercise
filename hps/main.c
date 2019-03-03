@@ -53,9 +53,10 @@ int main()
 	int reg_content;
 	int switch_state;
 	int switch_mask = 0x3;
-	int t_period;
-	unsigned long last_rec_time;
+	float t_period;
+	clock_t last_rec_time;
 	int led_status = 0;
+	float t_dif;
 
 	for (i = 0; i < 5; i++)
 	{
@@ -66,8 +67,9 @@ int main()
 		reg_content = *(uint32_t *)h2p_reg_addr[i];
 		printf("The value saved in register %d has been changed to: %d\n\n", i, reg_content);
 	}
+	i = 0;
 
-	for (i = 0; i < 100; i++)
+	while(i < 30)
 	{
 		reg_content = *(uint32_t *)h2p_reg_addr[4];		 //Read the 4th register
 		printf("IO-Register has stored: %d\n", reg_content);
@@ -77,29 +79,32 @@ int main()
 		{
 		case 0:
 			t_period = -1;
-			//*(uint32_t *)h2p_reg_addr[4] = (unsigned long)(0); // Always off
+			*(uint32_t *)h2p_reg_addr[4] = (unsigned long)(0); // Always off
 			printf("LED is supposed to be OFF\n");
 			break;
 		case 1:
 			t_period = -1;
-			//*(uint32_t *)h2p_reg_addr[4] = (unsigned long)(4); // Always on -> 4 = 100 
+			*(uint32_t *)h2p_reg_addr[4] = (unsigned long)(4); // Always on -> 4 = 100 
 			printf("LED is supposed to be ON\n");
 			break;
 		case 2:
-			t_period = 1000;
+			t_period = 500;
 			printf("LED is supposed to be changing\n");
 			break;
 		case 3:
-			t_period = 333;
+			t_period = 167;
 			printf("LED is supposed to be changing\n");
 			break;
 		}
 
-		if ((clock() > (t_period + last_rec_time)) && (t_period > 0))
+		t_dif = (float)((clock()-last_rec_time)*1000/CLOCKS_PER_SEC); // time in miliseconds
+
+		if ((t_dif>t_period) && (t_period > 0))
 		{							  //if time is up and it's supposed to blink
 			led_status = !led_status; //toggle LED status
-			//*(uint32_t *)h2p_reg_addr[4] = (unsigned long)(led_status*4);
+			*(uint32_t *)h2p_reg_addr[4] = (unsigned long)(led_status*4);
 			last_rec_time = clock();
+			i ++;
 		}
 	} 
 		// clean up our memory mapping and exit
