@@ -55,7 +55,6 @@ int main()
 	int switch_mask = 0x3;
 	double t_period;
 	clock_t last_rec_time;
-	clock_t time_now;
 	int led_status = 0;
 	double t_dif;
 
@@ -70,7 +69,7 @@ int main()
 	}
 	i = 0;
 
-	while(i < 30)
+	for (i = 0; i < 1000; i++)
 	{
 		reg_content = *(uint32_t *)h2p_reg_addr[4];		 //Read the 4th register
 		printf("IO-Register has stored: %d\n", reg_content);
@@ -85,7 +84,7 @@ int main()
 			break;
 		case 1:
 			t_period = -1;
-			*(uint32_t *)h2p_reg_addr[4] = (unsigned long)(4); // Always on -> 4 = 100 
+			*(uint32_t *)h2p_reg_addr[4] = (unsigned long)(4); // Always on -> 4 = 100
 			printf("LED is supposed to be ON\n");
 			break;
 		case 2:
@@ -98,8 +97,8 @@ int main()
 			break;
 		}
 
-		time_now = clock();
-		t_dif = (double)((time_now-last_rec_time)/CLOCKS_PER_SEC); // time in seconds
+		t_dif = ((double)clock()-last_rec_time);//CLOCKS_PER_SEC; // time in seconds
+		printf("%f\n",t_dif);
 
 		if ((t_dif>t_period) && (t_period > 0))
 		{							  //if time is up and it's supposed to blink
@@ -108,7 +107,7 @@ int main()
 			last_rec_time = clock();
 			i ++;
 		}
-	} 
+	}
 		// clean up our memory mapping and exit
 
 	if (munmap(virtual_base, HW_REGS_SPAN) != 0)
