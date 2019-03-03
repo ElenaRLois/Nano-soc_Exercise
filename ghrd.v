@@ -34,29 +34,8 @@
 `define ENABLE_HPS
 //`define ENABLE_CLK
 
-//module small_peripheral(
-//		// Clock and reset
-//		input					 clk,
-//		input					 reset,
-//		
-//		// Communication with hps
-//		input 		[2:0]  AB_s,
-//		input			[31:0] Din_s,
-//		output		[31:0] Dout_s,
-//		
-//		input 				 WR_s,
-//		input					 RD_s,
-//		
-//		// External IO
-//		input					 SW_0,
-//		input					 SW_1,
-//		output				 LED
-//);
-//endmodule
-
 module ghrd(
 
-		
       ///////// ADC /////////
       output             ADC_CONVST,
       output             ADC_SCK,
@@ -145,7 +124,6 @@ module ghrd(
 );
 
 
-
 //=======================================================
 //  REG/WIRE declarations
 //=======================================================
@@ -158,15 +136,6 @@ module ghrd(
   wire        hps_warm_reset;
   wire        hps_debug_reset;
   wire [27:0] stm_hw_events;
- 	// Clock and reset
-  wire		  clk;
-  wire		  reset;
-	// Communication with hps
-  wire [2:0]  AB_s;
-  wire [31:0] Din_s;
-  wire [31:0] Dout_s;	
-  wire		  WR_s;
-  wire		  RD_s;
 
 // connection of internal logics
   assign stm_hw_events    = {{13{1'b0}},SW, fpga_led_internal, fpga_debounced_buttons};
@@ -176,33 +145,11 @@ module ghrd(
 //  Structural coding
 //=======================================================
 
-small_peripheral sp(
-		.clk											 (clk_soc),
-		.reset        								 (reset_soc),
-		  
-		
-		.AB_s											 (AB_s),
-		.Din_s										 (Din_s),
-		.Dout_s										 (Dout_s),
-		
-		.WR_s         								 (WR_s),
-		.RD_s       								 (RD_s),
-		
-		
-		.SW_0         								 (SW[0]),
-		.SW_1      									 (SW[1]),	
-		.LED      									 (LED[0])
-);
 
  soc_system u0 (
-		.merlin_slave_translator_0_avalon_anti_slave_0_address   (AB_s),   				// merlin_slave_translator_0_avalon_anti_slave_0.address
-      .merlin_slave_translator_0_avalon_anti_slave_0_write     (WR_s),     			//                                              .write
-      .merlin_slave_translator_0_avalon_anti_slave_0_read      (RD_s),      			//                                              .read
-      .merlin_slave_translator_0_avalon_anti_slave_0_readdata  (Din_s),  				//                                              .readdata
-      .merlin_slave_translator_0_avalon_anti_slave_0_writedata (Dout_s),  				//                                              .writedata
-		.clock_bridge_0_out_clk_clk                              (clk),               // clock_bridge_0_out_clk.clk
-      .reset_bridge_0_out_reset_reset                          (reset),             // reset_bridge_0_out_reset.reset
-		
+		.small_peripheral_0_conduit_end_sw0    (SW[0]),    // small_peripheral_0_conduit_end.sw0
+      .small_peripheral_0_conduit_end_sw1    (SW[1]),    //                               .sw1
+      .small_peripheral_0_conduit_end_led    (LED[0]),     //                          
 		//Clock&Reset
 	  .clk_clk                               (FPGA_CLK1_50 ),                        //  clk.clk
 	  .reset_reset_n                         (1'b1         ),                        //  reset.reset_n
@@ -281,7 +228,7 @@ small_peripheral sp(
 	  .hps_0_hps_io_hps_io_gpio_inst_GPIO61  ( HPS_GSENSOR_INT ),  						// .hps_io_gpio_inst_GPIO61
     
 	  .hps_0_f2h_stm_hw_events_stm_hwevents  (stm_hw_events),  								//  hps_0_f2h_stm_hw_events.stm_hwevents
-	  .hps_0_h2f_reset_reset_n               (hps_fpga_reset_n),   						//  hps_0_h2f_reset.reset_n
+	  .hps_0_h2f_reset_reset_n               (hps_fpga_reset_n),   							//  hps_0_h2f_reset.reset_n
      .hps_0_f2h_warm_reset_req_reset_n      (~hps_warm_reset),      						//  hps_0_f2h_warm_reset_req.reset_n	
 	  .hps_0_f2h_debug_reset_req_reset_n     (~hps_debug_reset),     						//  hps_0_f2h_debug_reset_req.reset_n  
 	  .hps_0_f2h_cold_reset_req_reset_n      (~hps_cold_reset)      						//  hps_0_f2h_cold_reset_req.reset_n
