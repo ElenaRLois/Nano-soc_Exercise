@@ -53,10 +53,11 @@ int main()
 	int reg_content;
 	int switch_state;
 	int switch_mask = 0x3;
-	float t_period;
+	double t_period;
 	clock_t last_rec_time;
+	clock_t time_now;
 	int led_status = 0;
-	float t_dif;
+	double t_dif;
 
 	for (i = 0; i < 5; i++)
 	{
@@ -88,16 +89,17 @@ int main()
 			printf("LED is supposed to be ON\n");
 			break;
 		case 2:
-			t_period = 500;
+			t_period = 0.5;
 			printf("LED is supposed to be changing\n");
 			break;
 		case 3:
-			t_period = 167;
+			t_period = 0.167;
 			printf("LED is supposed to be changing\n");
 			break;
 		}
 
-		t_dif = (float)((clock()-last_rec_time)*1000/CLOCKS_PER_SEC); // time in miliseconds
+		time_now = clock();
+		t_dif = (double)((time_now-last_rec_time)/CLOCKS_PER_SEC); // time in seconds
 
 		if ((t_dif>t_period) && (t_period > 0))
 		{							  //if time is up and it's supposed to blink
