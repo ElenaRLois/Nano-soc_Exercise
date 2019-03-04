@@ -57,6 +57,12 @@ COMPONENT small_peripheral
 	);
 END COMPONENT;
 
+----------------    SIMULATION SIGNALS & VARIABLES    -------
+	signal sim_clk   				: STD_LOGIC 	:= '0';
+	signal sim_reset 				: STD_LOGIC 	:= '0';
+	signal sim_trig  				: STD_LOGIC 	:= '0';
+	shared variable edge_rise  : integer    	:= -1;
+	shared variable edge_fall 	: integer    	:= -1;
 
 BEGIN
 	i1 : small_peripheral
@@ -73,46 +79,94 @@ BEGIN
 	SW_1 => SW_1,
 	WR_s => WR_s
 	);
-clk <= not clk after 10 ns;
-stimuli : PROCESS                                                                                  
-BEGIN    
-	SW_0 <= '0';
-	SW_1 <= '0';                                                    
-	AB_s <= "000";
-	Din_s <= "10000000000000000000000000000001";
-	RD_s <= '0';
-	reset <= '0';
-	WR_s <= '1'; 
-	wait for 30 ns;
-	AB_s <= "001";
-	Din_s <= "11000000000000000000000000000011"; 
-	wait for 30 ns;
-	AB_s <= "010"; 
-	Din_s <= "11100000000000000000000000000111";
-	wait for 30 ns;
-	AB_s <= "011"; 
-	Din_s <= "11110000000000000000000000001111";
-	wait for 30 ns;
-	AB_s <= "100"; 
-	Din_s <= "11111000000000000000000000011111";
-	wait for 30 ns;
-	AB_s <= "000";
-	RD_s <= '1';
-	WR_s <= '0';
-	wait for 30 ns;
-	AB_s <= "001"; 
-	wait for 30 ns;
-	AB_s <= "010"; 
-	wait for 30 ns;
-	AB_s <= "011"; 
-	wait for 30 ns;
-	AB_s <= "100"; 
-	wait for 30 ns;
-	SW_0 <= '0';
-	SW_1 <= '0'; 
-	wait for 30 ns; 
-	SW_0 <= '0';
-	SW_1 <= '1';     
-WAIT;                                                       
+clk 	<= sim_clk;
+
+----------------    CLOCK PROCESS    ------------------------     
+	simulation_clock : process
+		-- repeat the counters edge_rise & edge_fall
+		constant max_cycles    	: integer   := 140;
+	begin
+		-- set sim_clk signal
+		sim_clk <= not(sim_clk);
+		-- adjust 
+		if (sim_clk = '0') then
+			edge_rise := edge_rise + 1;
+		else
+			edge_fall := edge_fall + 1;
+		end if;
+		if( edge_fall = max_cycles ) then
+			edge_rise := 0;
+			edge_fall := 0;
+		end if;  
+		-- trigger the stimuli process
+		wait for 0.05 ns;
+		sim_trig <= not(sim_trig);
+		-- wait until end of 1/2 period
+		wait for 0.45 ns;
+	end process simulation_clock;
+
+stimuli : PROCESS(sim_trig)                                                                                 
+BEGIN   
+	if ( edge_rise = 0 ) then
+		SW_0 <= '0';
+		SW_1 <= '0';                                                    
+		AB_s <= "000";
+		Din_s <= "10000000000000000000000000000001";
+		RD_s <= '0';
+		reset <= '0';
+		WR_s <= '1'; 
+	end if; 
+	
+	if ( edge_rise = 1 ) then
+		AB_s <= "001";
+		Din_s <= "11000000000000000000000000000011"; 
+	end if; 
+	
+	if ( edge_rise = 2 ) then
+		AB_s <= "010"; 
+		Din_s <= "11100000000000000000000000000111";
+	end if; 
+	
+	if ( edge_rise = 3 ) then
+		AB_s <= "011"; 
+		Din_s <= "11110000000000000000000000001111";
+	end if; 
+	
+	if ( edge_rise = 4 ) then
+		AB_s <= "100"; 
+		Din_s <= "11111000000000000000000000011111";
+	end if; 
+	
+	if ( edge_rise = 5 ) then
+		AB_s <= "000";
+		RD_s <= '1';
+		WR_s <= '0';
+	end if; 
+	
+	if ( edge_rise = 6 ) then
+		AB_s <= "001"; 
+	end if; 
+	
+	if ( edge_rise = 7 ) then
+		AB_s <= "010"; 
+	end if; 
+	
+	if ( edge_rise = 8 ) then
+		AB_s <= "011"; 
+	end if; 
+	
+	if ( edge_rise = 9 ) then
+		AB_s <= "100"; 
+	end if; 
+	
+	if ( edge_rise = 10 ) then
+		SW_0 <= '0';
+		SW_1 <= '0'; 
+	end if; 
+	
+	if ( edge_rise = 11 ) then
+		SW_0 <= '0';
+		SW_1 <= '1';   
+	end if;                                                 
 END PROCESS stimuli;                                                                          
 END small_peripheral_arch;

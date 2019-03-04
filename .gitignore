@@ -32,6 +32,9 @@ stamp/*
 *.wlf
 *rtl_work/
 *run_msim_rtl*
+*.vho
+*.xrf
+*.sft
 
 #software
 *.o

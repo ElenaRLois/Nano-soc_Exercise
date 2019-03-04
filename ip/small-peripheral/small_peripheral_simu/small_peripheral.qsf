@@ -46,13 +46,9 @@ set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 256
-set_global_assignment -name VHDL_FILE small_peripheral.vhd
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name VHDL_FILE chip_select.vhd
-set_global_assignment -name VHDL_FILE generic_register.vhd
-set_global_assignment -name VHDL_FILE io_register.vhd
 set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (VHDL)"
 set_global_assignment -name EDA_OUTPUT_DATA_FORMAT VHDL -section_id eda_simulation
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
@@ -64,4 +60,8 @@ set_global_assignment -name EDA_DESIGN_INSTANCE_NAME i1 -section_id small_periph
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME small_peripheral_vhd_tst -section_id small_peripheral_vhd_tst
 set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "400 ns" -section_id small_peripheral_vhd_tst
 set_global_assignment -name EDA_TEST_BENCH_FILE simulation/modelsim/small_peripheral.vht -section_id small_peripheral_vhd_tst
+set_global_assignment -name VHDL_FILE ../small_peripheral.vhd
+set_global_assignment -name VHDL_FILE ../io_register.vhd
+set_global_assignment -name VHDL_FILE ../generic_register.vhd
+set_global_assignment -name VHDL_FILE ../chip_select.vhd
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
